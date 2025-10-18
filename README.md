@@ -217,4 +217,113 @@ fun main() {
 
 ***
 
-این جزوه به شما کمک می‌کند مفاهیم پایه‌ای برنامه‌نویسی شی‌ءگرا را به صورت کاربردی و گام‌به‌گام یاد بگیرید و در پروژه‌هایتان استفاده کنید.  
+این جزوه به شما کمک می‌کند مفاهیم پایه‌ای برنامه‌نویسی شی‌ءگرا را به صورت کاربردی و گام‌به‌گام یاد بگیرید و در پروژه‌هایتان استفاده کنید. 
+
+
+
+### صورت سوال تمرین پروژه مدیریت کتابخانه با نقش‌های کاربری و منوی ساده
+
+در این تمرین باید یک برنامه ساده مدیریت کتابخانه با زبان کاتلین بسازید که:
+
+- داده‌های مربوط به کتاب‌ها را با استفاده از کلاس `Book` (نوع داده‌ای data class) نگهداری کند. هر کتاب خصوصیات `title`, `author`, و `year` دارد.
+- یک کلاس `Library` داشته باشید که لیستی از کتاب‌ها را در خود نگه می‌دارد و متدهای `addBook`, `removeBook`, و `showBooks` برای مدیریت این کتاب‌ها ارائه کند.
+- برنامه بتواند نقش کاربری را بگیرد: کاربر عادی (User) یا مدیر (Admin).
+- کاربر عادی فقط بتواند کتاب‌ها را مشاهده کند، ولی مدیر بتواند کتاب اضافه یا حذف کند.
+- یک منوی متنی ساده داشته باشد که بر اساس انتخاب کاربر عملیات مربوط انجام شود.
+- همه ورودی‌ها با `readln()` و انتخاب‌ها با `when` کنترل شوند.
+
+***
+
+### کد کامل نمونه برای این تمرین
+
+```kotlin
+data class Book(val title: String, val author: String, val year: Int)
+
+class Library {
+    private val books = mutableListOf<Book>()
+
+    fun addBook(book: Book) {
+        books.add(book)
+        println("Book '${book.title}' added.")
+    }
+
+    fun removeBook(title: String) {
+        val removed = books.removeIf { it.title.equals(title, ignoreCase = true) }
+        if (removed) println("Book '$title' removed.")
+        else println("Book '$title' not found.")
+    }
+
+    fun showBooks() {
+        if (books.isEmpty()) {
+            println("No books available.")
+        } else {
+            println("Books:")
+            books.forEach { println("- ${it.title} by ${it.author} (${it.year})") }
+        }
+    }
+}
+
+fun main() {
+    val library = Library()
+    println("Select role: 1 - User, 2 - Admin")
+    val role = readln()
+
+    while (true) {
+        if (role == "1") {
+            println(
+                """
+                |Menu:
+                |1 - View Books
+                |0 - Exit
+            """.trimMargin()
+            )
+            print("Enter choice: ")
+            when (readln()) {
+                "1" -> library.showBooks()
+                "0" -> break
+                else -> println("Invalid choice")
+            }
+        } else if (role == "2") {
+            println(
+                """
+                |Menu:
+                |1 - View Books
+                |2 - Add Book
+                |3 - Remove Book
+                |0 - Exit
+            """.trimMargin()
+            )
+            print("Enter choice: ")
+            when (readln()) {
+                "1" -> library.showBooks()
+                "2" -> {
+                    print("Book title: ")
+                    val title = readln()
+                    print("Author: ")
+                    val author = readln()
+                    print("Year: ")
+                    val year = readln().toIntOrNull() ?: 0
+                    if (year == 0) println("Invalid year!")
+                    else library.addBook(Book(title, author, year))
+                }
+                "3" -> {
+                    print("Title to remove: ")
+                    val title = readln()
+                    library.removeBook(title)
+                }
+                "0" -> break
+                else -> println("Invalid choice")
+            }
+        } else {
+            println("Invalid role. Exiting.")
+            break
+        }
+        println()
+    }
+    println("Program ended.")
+}
+```
+
+***
+.
+
